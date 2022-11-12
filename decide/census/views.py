@@ -17,6 +17,7 @@ from .admin import CensusResource
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
+# from django.Template import Template,Context
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -53,3 +54,65 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+
+def fullExport(request,format):
+    census_resource = CensusResource()
+    dataset = census_resource.export()
+    if format == 'csv' or format is None:
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+    elif format == 'xls':
+        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+    elif format == 'json':
+        response = HttpResponse(dataset.json, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="census.json"'
+    else:
+        response = HttpResponseBadRequest('Invalid format')
+    return response
+
+
+
+def exportByVoting(request, format, voting_id):
+    census_resourse = CensusResource()
+    dataset = census_resourse.export(Census.objects.filter(voting_id=voting_id))
+    if format == 'csv' or format is None:
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+    elif format == 'xls':
+        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+    elif format =='json':
+        response = HttpResponse(dataset.json, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="census.json"'
+    else:
+        response = HttpResponseBadRequest('Invalid format')
+    return response
+
+def exportByVoter(request, format, voter_id):
+    census_resourse = CensusResource()
+    dataset = census_resourse.export(Census.objects.filter(voter_id=voter_id))
+    if format == 'csv' or format is None:
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+    elif format == 'xls':
+        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+    elif format =='json':
+        response = HttpResponse(dataset.json, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="census.json"'
+    else:
+        response = HttpResponseBadRequest('Invalid format')
+    return response
+
+
+
+# def import_site(request):
+#     doc = open("/home/pablo/decide-part-utrera-2/decide/census/templates/export_prueba.html")
+#     plt = Template(doc.read())
+#     doc.close()
+#     ctx = Context()
+#     documento  = plt.render(ctx)
+
+#     return HttpResponse(documento)
