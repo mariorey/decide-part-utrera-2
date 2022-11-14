@@ -56,10 +56,10 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         return Response('Valid voter')
 
 
-def fullExport(request,format):
+def export(request,format):
     census_resource = CensusResource()
     dataset = census_resource.export()
-    if format == 'csv' or format is None:
+    if format == 'csv':
         response = HttpResponse(dataset.csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="census.csv"'
     elif format == 'xls':
@@ -77,7 +77,7 @@ def fullExport(request,format):
 def exportByVoting(request, format, voting_id):
     census_resourse = CensusResource()
     dataset = census_resourse.export(Census.objects.filter(voting_id=voting_id))
-    if format == 'csv' or format is None:
+    if format == 'csv':
         response = HttpResponse(dataset.csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="census.csv"'
     elif format == 'xls':
@@ -93,7 +93,7 @@ def exportByVoting(request, format, voting_id):
 def exportByVoter(request, format, voter_id):
     census_resourse = CensusResource()
     dataset = census_resourse.export(Census.objects.filter(voter_id=voter_id))
-    if format == 'csv' or format is None:
+    if format == 'csv':
         response = HttpResponse(dataset.csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="census.csv"'
     elif format == 'xls':
