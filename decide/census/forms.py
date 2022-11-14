@@ -8,7 +8,7 @@ class CensusAddLdapFormVotacion(forms.Form):
 
        Atributtes:
             Voting (Votacion)
-            urlLdapring)
+            urlLdap (String)
             treeSufix (String)
             branch (String)
             pwd (String)
