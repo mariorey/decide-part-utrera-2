@@ -2,7 +2,7 @@ from ldap3 import Server, Connection, ALL_ATTRIBUTES
 import re
 
 class LdapCensus:
-    def ldapConnectionMethod(self, urlServer, auth, psw):
+    def ldapConnection(self, urlServer, auth, psw):
         """This method establishes a connection with the LDAP server passed by parameters, 
         the object address object is returned at the end.
     
@@ -15,8 +15,8 @@ class LdapCensus:
         conn = Connection(server, auth, psw, auto_bind=True)
         return conn
 
-    def LdapGroups(self, LdapUrl, auth, psw, branch):
-      """This method calls ldapConnectionMethod to establish a connection and then do a search for 
+    def ldapGroups(self, LdapUrl, auth, psw, branch):
+        """This method calls ldapConnectionMethod to establish a connection and then do a search for 
         the branch indicated where the users to be added in the census are located
     
         Args:
@@ -25,7 +25,7 @@ class LdapCensus:
             psw: the password of the user.
             branch: branch of the group whose members we want to add to the census.
         """ 
-        conn = LdapCensus().ldapConnectionMethod(LdapUrl, auth, psw)
+        conn = LdapCensus().ldapConnection(LdapUrl, auth, psw)
         conn.search(search_base=branch, search_filter='(objectclass=*)', attributes=[ALL_ATTRIBUTES])
         ldapList = []
         for entries in conn.entries:
