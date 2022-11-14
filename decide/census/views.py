@@ -13,7 +13,7 @@ from rest_framework.status import (
 from base.perms import UserIsStaff
 from .models import Census
 
-
+from django.http import HttpResponse
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
 
@@ -49,3 +49,21 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+
+
+def reuseCensus(request, new_voting, old_voting):
+
+    voters=Census.objects.filter(voting_id=old_voting).values_list('voter_id', flat=True)
+    votersNoDuplicate = set()
+
+    for v in voters:
+        votersNoDuplicate.add(v)
+
+
+    for v in list(votersNoDuplicate): 
+        census = Census(voting_id=new_voting, voter_id= v)
+        census.save()
+
+
+    return HttpResponse('REUTILIZADO CON ÉXITO')
