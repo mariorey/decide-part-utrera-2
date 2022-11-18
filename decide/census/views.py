@@ -12,6 +12,7 @@ from rest_framework.status import (
 
 from base.perms import UserIsStaff
 from .models import Census
+from django.shortcuts import render
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -49,3 +50,24 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+
+def censusShow(request):
+    context = {
+        'allCensus':Census.objects.all(),
+    }
+    return render(request,"showAllCensus.html", context)
+
+def censusShowDetails(request,id):
+    context = {
+        'census':Census.objects.get(id=id)
+    }
+    return render(request,"census_detail.html",context)
+
+def votersInVoting(request, voting_id):
+    voters = Census.objects.filter(voting_id=voting_id)
+    context = {
+        'voters' : voters
+    }
+    return render(request,'votersInVoting.html',context)
+
