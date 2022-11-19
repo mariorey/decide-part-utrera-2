@@ -78,7 +78,6 @@ def importCensusFromLdapVotacion(request):
 
                 voters = User.objects.all()
                 usernameList = LdapCensus().ldapGroups(urlLdap, treeSufix, pwd, branch)
-
                 userList = []
                 for username in usernameList:
                     user = voters.filter(username=username)
@@ -90,8 +89,11 @@ def importCensusFromLdapVotacion(request):
                 for username in userList:
                     census = Census(voting_id=voting, voter_id=username)
                     census_list = Census.objects.all()
-                    census.save()
-
+                    try:
+                        census.save()
+                    except IntegrityError:
+                        messages.add_message(request, messages.ERROR, "Todos los usuarios han sido importados excepto los que ya estaban en la base de datos")
+                    
             return redirect('/admin/census/census')
         else:
             form = CensusAddLdapFormVotacion()

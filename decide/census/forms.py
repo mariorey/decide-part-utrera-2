@@ -14,7 +14,7 @@ class CensusAddLdapFormVotacion(forms.Form):
             pwd (String)
     """
     voting = forms.ModelChoiceField(label='Votación a la que desea añadir censo', empty_label="-",
-                                     queryset=Voting.objects.all().filter(start_date__isnull=False), required=True,)
+                                     queryset=Voting.objects.all().filter(end_date__isnull=True), required=True,)
 
     urlLdap = forms.CharField(label='Url del servidor LDAP',
                                 widget=forms.TextInput(attrs={'placeholder': 'ldap.ServerUrl:Port'}),
