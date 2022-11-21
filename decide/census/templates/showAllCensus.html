@@ -7,16 +7,40 @@
         <meta charset="utf-8" />
         <meta name = "viewport" content = "width = device-width, initial-scale = 1">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-        <title>{% block title %}Decide censos{% endblock %}</title>
+        <title>{% block title %}Census - All Census{% endblock %}</title>
     </head>
 
 
 <body>
-
-    {% for census in allCensus%}
-          <p> {{ census.id }}  |  {{ census.voter_id }}  |  {{ census.voting_id }}</p>
-          <br>
-    {% endfor %}
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Voter Id</th>
+            <th scope="col">Voting Id</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for census in allCensus%}
+            <th scope="row">{{ census.id }}</th>
+            <td>{{ census.voter_id }}</td>
+            <td>{{ census.voting_id }}</td>
+            <td><a href="#" class="btn btn-primary a-btn-slide-text">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                <span><strong>Edit</strong></span>            
+            </a>
+            <a href="{% url 'deleteCensus' census.voting_id census.voter_id %}" class="btn btn-danger a-btn-slide-text">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                 <span><strong>Delete</strong></span>            
+             </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    
 
 
 {% block extrabody %}
