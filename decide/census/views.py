@@ -89,7 +89,10 @@ def votersInVoting(request, voting_id):
         voters.append(voter)
     context = {
         'voters': voters,
-        'voting_id': voting_id
+        'voting_id': voting_id,
+        'format1':"csv",
+        'format2':"xls",
+        'format3':"json"
     }
     return render(request, "votersInVoting.html", context)
 
@@ -229,7 +232,6 @@ def validate_dataset(dataset):
     else:
         return False
             
-=======
 def export(request,format):
 
     """

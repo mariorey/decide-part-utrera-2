@@ -27,12 +27,26 @@
   <table class="table table-hover table-sm">
     <thead>
       <tr>
-        <th scope="col">Username <a href="{% url 'createCensus' voting_id %}" class="btn btn-primary a-btn-slide-text">
+        <th scope="col">Username 
+        </th>
+        <th scope="col">Actions
+          <a href="{% url 'createCensus' voting_id %}" class="btn btn-primary a-btn-slide-text">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
             <span><strong>Add</strong></span>
           </a>
+          <a href="{% url 'exportByVoting' voting_id format1 %}" class="btn btn-primary a-btn-slide-text">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <span><strong>Exportar en CSV</strong></span>
+          </a>
+          <a href="{% url 'exportByVoting' voting_id format2 %}" class="btn btn-primary a-btn-slide-text">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <span><strong>Exportar en XLS</strong></span>
+          </a>
+          <a href="{% url 'exportByVoting' voting_id format3 %}" class="btn btn-primary a-btn-slide-text">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <span><strong>Exportar en JSON</strong></span>
+          </a>
         </th>
-        <th scope="col">Actions</th>
       </tr>
     </thead>
     <tbody>

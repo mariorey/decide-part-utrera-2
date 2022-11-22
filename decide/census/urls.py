@@ -12,9 +12,9 @@ urlpatterns = [
     path('voting/<int:voting_id>/create', views.createCensus, name = "createCensus"),
     path('voting/<int:voting_id>/<int:voter_id>/delete', views.deleteCensus, name="deleteCensus"),
     path('addLDAPcensusVotacion/', importCensusFromLdapVotacion, name='addLDAPcensusVotacion'),
-    path('importExcel/', importar, name='importExcel')
+    path('importExcel/', importar, name='importExcel'),
     path('export/<format>/',views.export),
-    path('exportbyVoting/<int:voting_id>/<format>/',views.exportByVoting),
+    path('exportbyVoting/<int:voting_id>/<format>/',views.exportByVoting, name='exportByVoting'),
     path('exportbyVoter/<int:voter_id>/<format>/',views.exportByVoter)
 
 ]
