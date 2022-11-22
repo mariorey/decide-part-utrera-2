@@ -76,7 +76,7 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
 
-##### IMPORTACION LDAP #####
+
 
     def test_ldap_check_votacion_pass(self):
 
@@ -161,3 +161,98 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(antes,despues)
     
+
+class ExportCensusTest(BaseTestCase):
+
+    def setUp(self):
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.census = None
+
+    
+    def testExportCsv(self):
+        response = self.client.get('/census/export/csv/')
+        self.assertEquals(response.get('Content-Type'), 'text/csv')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.csv"')
+
+    def testExportExcel(self):
+        response = self.client.get('/census/export/xls/')
+        self.assertEquals(response.get('Content-Type'), 'application/vnd.ms-excel')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.xls"')
+   
+    def testExportJson(self):
+        response = self.client.get('/census/export/json/')
+        self.assertEquals(response.get('Content-Type'), 'application/json')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.json"')
+        
+    def testExportError(self):
+        response = self.client.get('/census/export/sdgsd')
+        self.assertEquals(response.status_code, 301)
+
+
+class ExportCensusByVoterTest(BaseTestCase):
+    def setUp(self):
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.census = None
+
+
+    def testExportByVoterCsv(self):
+        response = self.client.get('/census/exportbyVoter/1/csv/')
+        self.assertEquals(response.get('Content-Type'), 'text/csv')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.csv"')
+
+
+    def testExportByVoterExcel(self):
+        response = self.client.get('/census/exportbyVoter/1/xls/')
+        self.assertEquals(response.get('Content-Type'), 'application/vnd.ms-excel')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.xls"')
+
+    def testExportByVoterJson(self):
+        response = self.client.get('/census/exportbyVoter/1/json/')
+        self.assertEquals(response.get('Content-Type'), 'application/json')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.json"')
+
+    def testExportByVoterError(self):
+        response = self.client.get('/census/exportbyVoter/1/asdasf')
+        self.assertEquals(response.status_code, 301)
+
+class ExportCensusByVotingTest(BaseTestCase):
+    def setUp(self):
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.census = None
+
+
+    def testExportByVotingCsv(self):
+        response = self.client.get('/census/exportbyVoting/1/csv/')
+        self.assertEquals(response.get('Content-Type'), 'text/csv')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.csv"')
+
+
+    def testExportByVotingExcel(self):
+        response = self.client.get('/census/exportbyVoting/1/xls/')
+        self.assertEquals(response.get('Content-Type'), 'application/vnd.ms-excel')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.xls"')
+
+    def testExportByVotingJson(self):
+        response = self.client.get('/census/exportbyVoting/1/json/')
+        self.assertEquals(response.get('Content-Type'), 'application/json')
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.json"')
+
+    def testExportByVotingrror(self):
+        response = self.client.get('/census/exportbyVoting/1/asdasf')
+        self.assertEquals(response.status_code, 301)
+

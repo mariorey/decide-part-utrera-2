@@ -21,8 +21,11 @@ from django.shortcuts import render, redirect
 from .ldapFunctions import LdapCensus
 from census.forms import *
 from voting.models import Voting
+from tablib import Dataset
+from .admin import CensusResource
 from django.contrib.auth.models import User
-
+from django.db import models
+from django.http import HttpResponse
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -226,3 +229,101 @@ def validate_dataset(dataset):
     else:
         return False
             
+=======
+def export(request,format):
+
+    """
+        This method make a archive contains census datas and you can choose the format of this
+    archive with format parameter
+
+
+    Args:
+
+        request:Request object extends from HttpRequest and this parameter contain metadatos from the request.
+        we use to access data.
+
+        format: string reference a type of extension you want to export cesus datas
+
+    """
+
+    census_resource = CensusResource()
+    dataset = census_resource.export()
+    if format == 'csv':
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+    elif format == 'xls':
+        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+    elif format == 'json':
+        response = HttpResponse(dataset.json, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="census.json"'
+    else:
+        response = HttpResponseBadRequest('Invalid format')
+    return response
+
+
+
+def exportByVoting(request, format, voting_id):
+    """
+        This method make a archive contains census datas and you can choose the format of this
+    archive with format parameter anf filter from voting_id parameter for export only a specific
+    voting
+
+
+    Args:
+
+        request:Request object extends from HttpRequest and this parameter contain metadatos from the request.
+        we use to access data
+
+        format: string reference a type of extension you want to export cesus datas
+
+        voting_id:int reference a ID from voting_id we use this for filter datas for a specific voting.
+
+    """
+    census_resourse = CensusResource()
+    dataset = census_resourse.export(Census.objects.filter(voting_id=voting_id))
+    if format == 'csv':
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+    elif format == 'xls':
+        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+    elif format =='json':
+        response = HttpResponse(dataset.json, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="census.json"'
+    else:
+        response = HttpResponseBadRequest('Invalid format')
+    return response
+
+def exportByVoter(request, format, voter_id):
+    """
+                This method make a archive contains census datas and you can choose the format of this
+            archive with format parameter anf filter from voter_id parameter for export
+            votings from a specific voter.
+
+
+            Args:
+
+                request:Request object extends from HttpRequest and this parameter contain metadatos from the request.
+                we use to access data
+
+                format: string reference a type of extension you want to export cesus datas
+
+                voter_id:int reference a ID from voter that we use this for filter datas for a specific Voter
+    """
+    
+    census_resourse = CensusResource()
+    dataset = census_resourse.export(Census.objects.filter(voter_id=voter_id))
+    if format == 'csv':
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+    elif format == 'xls':
+        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+    elif format =='json':
+        response = HttpResponse(dataset.json, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="census.json"'
+    else:
+        response = HttpResponseBadRequest('Invalid format')
+    return response
+
