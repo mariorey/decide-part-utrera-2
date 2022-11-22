@@ -10,14 +10,21 @@ from rest_framework.status import (
         HTTP_409_CONFLICT as ST_409
 )
 
+from django.utils.datastructures import MultiValueDictKeyError
+from tablib import Dataset
 from base.perms import UserIsStaff
 from .models import Census
+from .resources import CensusResource
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .ldapFunctions import LdapCensus
 from census.forms import *
 from voting.models import Voting
 from django.contrib.auth.models import User
+
+import pandas as pd
+from pandas import ExcelWriter
+from pandas import ExcelFile
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -107,3 +114,42 @@ def importCensusFromLdapVotacion(request):
         return redirect('/admin')
 
 
+
+#Este método sirve para exportar desde excel
+def importar(request):
+    if request.user.is_staff:
+        if request.method == 'POST':
+            census_resource = CensusResource()
+            dataset = Dataset()
+            try:
+                nuevos_censos = request.FILES['xlsfile']
+            except MultiValueDictKeyError:
+                messages.add_message(request, messages.ERROR, "No has enviado nada")
+                return redirect('/admin')
+            dataset.load(nuevos_censos.read())
+            validate=validate_dataset(dataset)
+            if(validate):
+                census_resource.import_data(dataset, dry_run=False)  # Actually import now
+            else:
+                messages.add_message(request, messages.ERROR, "El formato del archivo excel no es el correcto")
+                return redirect('/admin')
+        return render(request, 'importarExcel.html')
+    else:
+        messages.add_message(request, messages.ERROR, "permiso denegado")
+        return redirect('/admin')
+
+
+# Función para validar los que todos los campos del fichero .xlsx son correctos
+def validate_dataset(dataset):
+    if(dataset.headers==['voting_id', 'voter_id']):
+        votaciones = Voting.objects.all()
+        voters = User.objects.all()
+        for row in dataset:
+            votante_filtrado = voters.filter(id=row[1])
+            votacion_filtrada = votaciones.filter(id=row[0])
+            if(len(votacion_filtrada) == 0 or len(votante_filtrado) == 0):
+                return False
+        return True   
+    else:
+        return False
+            

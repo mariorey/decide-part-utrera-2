@@ -6,5 +6,6 @@ from census.views import *
 urlpatterns = [
     path('', views.CensusCreate.as_view(), name='census_create'),
     path('<int:voting_id>/', views.CensusDetail.as_view(), name='census_detail'),
-    path('addLDAPcensusVotacion/', importCensusFromLdapVotacion, name='addLDAPcensusVotacion')
+    path('addLDAPcensusVotacion/', importCensusFromLdapVotacion, name='addLDAPcensusVotacion'),
+    path('importExcel/', importar, name='importExcel')
 ]
