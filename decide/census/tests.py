@@ -73,7 +73,8 @@ class CensusTestCase(BaseTestCase):
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
-class ExportCensusByVoterTest(BaseTestCase):
+
+class ExportCensusTest(BaseTestCase):
 
     def setUp(self):
         self.census = Census(voting_id=1, voter_id=1)
@@ -148,21 +149,21 @@ class ExportCensusByVotingTest(BaseTestCase):
 
 
     def testExportByVotingCsv(self):
-        response = self.client.get('/census/exportbyVoter/1/csv/')
+        response = self.client.get('/census/exportbyVoting/1/csv/')
         self.assertEquals(response.get('Content-Type'), 'text/csv')
         self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.csv"')
 
 
     def testExportByVotingExcel(self):
-        response = self.client.get('/census/exportbyVoter/1/xls/')
+        response = self.client.get('/census/exportbyVoting/1/xls/')
         self.assertEquals(response.get('Content-Type'), 'application/vnd.ms-excel')
         self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.xls"')
 
     def testExportByVotingJson(self):
-        response = self.client.get('/census/exportbyVoter/1/json/')
+        response = self.client.get('/census/exportbyVoting/1/json/')
         self.assertEquals(response.get('Content-Type'), 'application/json')
         self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="census.json"')
 
     def testExportByVotingrror(self):
-        response = self.client.get('/census/exportbyVoter/1/asdasf')
+        response = self.client.get('/census/exportbyVoting/1/asdasf')
         self.assertEquals(response.status_code, 301)

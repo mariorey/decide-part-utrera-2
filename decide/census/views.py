@@ -17,7 +17,7 @@ from .admin import CensusResource
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
-# from django.Template import Template,Context
+
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -57,6 +57,21 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 
 
 def export(request,format):
+
+    """
+        This method make a archive contains census datas and you can choose the format of this
+    archive with format parameter
+
+
+    Args:
+
+        request:Request object extends from HttpRequest and this parameter contain metadatos from the request.
+        we use to access data.
+
+        format: string reference a type of extension you want to export cesus datas
+
+    """
+
     census_resource = CensusResource()
     dataset = census_resource.export()
     if format == 'csv':
@@ -75,6 +90,22 @@ def export(request,format):
 
 
 def exportByVoting(request, format, voting_id):
+    """
+        This method make a archive contains census datas and you can choose the format of this
+    archive with format parameter anf filter from voting_id parameter for export only a specific
+    voting
+
+
+    Args:
+
+        request:Request object extends from HttpRequest and this parameter contain metadatos from the request.
+        we use to access data
+
+        format: string reference a type of extension you want to export cesus datas
+
+        voting_id:int reference a ID from voting_id we use this for filter datas for a specific voting.
+
+    """
     census_resourse = CensusResource()
     dataset = census_resourse.export(Census.objects.filter(voting_id=voting_id))
     if format == 'csv':
@@ -91,6 +122,22 @@ def exportByVoting(request, format, voting_id):
     return response
 
 def exportByVoter(request, format, voter_id):
+    """
+                This method make a archive contains census datas and you can choose the format of this
+            archive with format parameter anf filter from voter_id parameter for export
+            votings from a specific voter.
+
+
+            Args:
+
+                request:Request object extends from HttpRequest and this parameter contain metadatos from the request.
+                we use to access data
+
+                format: string reference a type of extension you want to export cesus datas
+
+                voter_id:int reference a ID from voter that we use this for filter datas for a specific Voter
+    """
+    
     census_resourse = CensusResource()
     dataset = census_resourse.export(Census.objects.filter(voter_id=voter_id))
     if format == 'csv':
@@ -105,14 +152,3 @@ def exportByVoter(request, format, voter_id):
     else:
         response = HttpResponseBadRequest('Invalid format')
     return response
-
-
-
-# def import_site(request):
-#     doc = open("/home/pablo/decide-part-utrera-2/decide/census/templates/export_prueba.html")
-#     plt = Template(doc.read())
-#     doc.close()
-#     ctx = Context()
-#     documento  = plt.render(ctx)
-
-#     return HttpResponse(documento)
