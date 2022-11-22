@@ -1,7 +1,12 @@
 from django import forms
+from django.contrib.auth.models import User
 from voting.models import *
 from census.models import Census
 from django.forms import ModelMultipleChoiceField
+
+
+class CensusCreateForm(forms.Form):
+    voters = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
 
 class CensusAddLdapFormVotacion(forms.Form):
     """This form contains the necessary data to perform the LDAP method.
@@ -30,3 +35,4 @@ class CensusAddLdapFormVotacion(forms.Form):
 
     pwd = forms.CharField(label='Contraseña del administrador LDAP',
                                 widget=forms.TextInput(attrs={'placeholder': 'Password'}), required=True)
+
