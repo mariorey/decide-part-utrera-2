@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+import os.path
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
@@ -161,3 +162,30 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(antes,despues)
     
+    
+
+    def test_import(self):
+
+        #Creamos el usuario con privilegios de administrador
+        admin = User(username='administrado')
+        admin.set_password('1234567asd')
+        admin.is_staff = True
+        admin.save()
+
+        # GET the import form
+        self.client.force_login(admin)
+        response = self.client.get('/census/importExcel/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'importarExcel.html')
+
+        # POST the import form
+        input_format = 'xlsfile'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'importar.xlsx')
+        with open(filename, "rb") as f:
+            data = {
+                'xlsfile': f,
+            }
+            response = self.client.post('/census/voting/', data)
+        self.assertEqual(response.status_code, 200)

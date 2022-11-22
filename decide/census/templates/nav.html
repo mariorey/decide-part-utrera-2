@@ -23,13 +23,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item active">
-                  <a class="nav-link" href="#">Mostrar todos<span class="sr-only">(current)</span></a>
+                  <a class="nav-link" href="/census/showAll">Mostrar todos<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'showVotings' %}">Lista de votaciones</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/census/census">Reutilizacion de censos antiguos</a>
+                  <a class="nav-link" href="#">Reutilizacion de censos antiguos</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/census/importExcel">Importar censo desde Excel</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/census/addLDAPcensusVotacion">Importar censo desde LDAP</a>
                 </li>
               </ul>
             </div>

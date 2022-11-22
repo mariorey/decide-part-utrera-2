@@ -11,6 +11,7 @@ from rest_framework.status import (
 )
 
 from django.utils.datastructures import MultiValueDictKeyError
+from ldap3.core.exceptions import LDAPBindError
 from tablib import Dataset
 from base.perms import UserIsStaff
 from .models import Census
@@ -157,24 +158,31 @@ def importCensusFromLdapVotacion(request):
                 voting = form.cleaned_data['voting'].__getattribute__('pk')
 
                 voters = User.objects.all()
-                usernameList = LdapCensus().ldapGroups(urlLdap, treeSufix, pwd, branch)
-                userList = []
-                for username in usernameList:
-                    user = voters.filter(username=username)
-                    if user:
-                        user = user.values('id')[0]['id']
-                        userList.append(user)
+                try:
+                    usernameList = LdapCensus().ldapGroups(urlLdap, treeSufix, pwd, branch)
+                    userList = []
+                    for username in usernameList:
+                        user = voters.filter(username=username)
+                        if user:
+                            user = user.values('id')[0]['id']
+                            userList.append(user)
+                except LDAPBindError:
+                    messages.add_message(request, messages.ERROR, "Los datos del formulario son erróneos")            
+                    return redirect('/census/voting')
 
             if request.user.is_authenticated:
                 for username in userList:
                     census = Census(voting_id=voting, voter_id=username)
                     census_list = Census.objects.all()
+                    voter = User.objects.all().filter(id=username)[0]
+                    voter_name = voter.username
+                    
                     try:
                         census.save()
                     except IntegrityError:
-                        messages.add_message(request, messages.ERROR, "Todos los usuarios han sido importados excepto los que ya estaban en la base de datos")
+                        messages.add_message(request, messages.ERROR, "El usuario " + voter_name + " ya se encuentra en la base de datos")
                     
-            return redirect('/admin/census/census')
+            return redirect('/census/voting')
         else:
             form = CensusAddLdapFormVotacion()
 
@@ -198,19 +206,19 @@ def importar(request):
                 nuevos_censos = request.FILES['xlsfile']
             except MultiValueDictKeyError:
                 messages.add_message(request, messages.ERROR, "No has enviado nada")
-                return redirect('/admin')
+                return redirect('/census/voting')
             dataset.load(nuevos_censos.read())
             validate=validate_dataset(dataset)
             if(validate):
-                census_resource.import_data(dataset, dry_run=False)  # Actually import now
+                census_resource.import_data(dataset, dry_run=False)
+                return redirect('/census/voting')
             else:
                 messages.add_message(request, messages.ERROR, "El formato del archivo excel no es el correcto")
-                return redirect('/admin')
+                return redirect('/census/voting')
         return render(request, 'importarExcel.html')
     else:
         messages.add_message(request, messages.ERROR, "permiso denegado")
         return redirect('/admin')
-
 
 # Función para validar los que todos los campos del fichero .xlsx son correctos
 def validate_dataset(dataset):
