@@ -53,8 +53,20 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 
 
 def reuseCensus(request, new_voting, old_voting):
+    '''
+    This function creates new census instances for a new voting, reusing the voters from the census of an already existing voting 
+    
 
-    voters=Census.objects.filter(voting_id=old_voting).values_list('voter_id', flat=True)
+    args:
+
+    request:
+    new_voting: Identifier of the voting in which we want to reuse the voters
+    old_voting: Identifier of the voting from where we want to reuse the voters
+
+
+
+    '''
+    voters=Census.objects.filter(voting_id=old_voting).values_list('voter_id', flat=True) 
     votersNoDuplicate = set()
 
     for v in voters:

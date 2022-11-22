@@ -73,3 +73,26 @@ class CensusTestCase(BaseTestCase):
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
+
+
+class ReuseCensusTest(BaseTestCase):
+
+    def setUp(self):
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.census = None
+
+    
+    def testReuse(self):
+        response = self.client.get('/census/reuse/1/2/')    
+        num_voters1=Census.objects.filter(voting_id=1).count()
+        num_voters2=Census.objects.filter(voting_id=2).count()
+        self.assertEquals(num_voters1, num_voters2)
+
+
+
+    
