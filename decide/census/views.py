@@ -10,14 +10,19 @@ from rest_framework.status import (
     HTTP_409_CONFLICT as ST_409
 )
 
+from django.utils.datastructures import MultiValueDictKeyError
+from tablib import Dataset
 from base.perms import UserIsStaff
 from .models import Census
-from voting.models import Voting
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from .forms import *
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .resources import CensusResource
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .ldapFunctions import LdapCensus
+from census.forms import *
+from voting.models import Voting
+from django.contrib.auth.models import User
+
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -130,3 +135,94 @@ def deleteCensus(request, voting_id, voter_id):
         messages.add_message(
                         request, messages.ERROR, "El usuario no tiene permisos de administrador")
     return redirect('/census/voting/%s' % (voting_id))
+
+def importCensusFromLdapVotacion(request):
+    """This method processes the parameters sent by the form to call the connection method and the import LDAP method
+    to be able to create the census containing the users from the LDAP branch previously especified. This will work
+    if the users are already registered on the system.  
+        
+    Args:
+        request: contains the HTTP data of the LDAP import
+        """ 
+    if request.user.is_staff:
+
+        if request.method == 'POST':
+            form = CensusAddLdapFormVotacion(request.POST)
+
+            if form.is_valid():
+                urlLdap = form.cleaned_data['urlLdap']
+                treeSufix = form.cleaned_data['treeSufix']
+                pwd = form.cleaned_data['pwd']
+                branch = form.cleaned_data['branch']
+                voting = form.cleaned_data['voting'].__getattribute__('pk')
+
+                voters = User.objects.all()
+                usernameList = LdapCensus().ldapGroups(urlLdap, treeSufix, pwd, branch)
+                userList = []
+                for username in usernameList:
+                    user = voters.filter(username=username)
+                    if user:
+                        user = user.values('id')[0]['id']
+                        userList.append(user)
+
+            if request.user.is_authenticated:
+                for username in userList:
+                    census = Census(voting_id=voting, voter_id=username)
+                    census_list = Census.objects.all()
+                    try:
+                        census.save()
+                    except IntegrityError:
+                        messages.add_message(request, messages.ERROR, "Todos los usuarios han sido importados excepto los que ya estaban en la base de datos")
+                    
+            return redirect('/admin/census/census')
+        else:
+            form = CensusAddLdapFormVotacion()
+
+        context = {
+            'form': form,
+        }
+        return render(request, template_name='importarCensusLdapVotacion.html', context=context)
+    else:
+        messages.add_message(request, messages.ERROR, "permiso denegado")
+        return redirect('/admin')
+
+
+
+#Este método sirve para exportar desde excel
+def importar(request):
+    if request.user.is_staff:
+        if request.method == 'POST':
+            census_resource = CensusResource()
+            dataset = Dataset()
+            try:
+                nuevos_censos = request.FILES['xlsfile']
+            except MultiValueDictKeyError:
+                messages.add_message(request, messages.ERROR, "No has enviado nada")
+                return redirect('/admin')
+            dataset.load(nuevos_censos.read())
+            validate=validate_dataset(dataset)
+            if(validate):
+                census_resource.import_data(dataset, dry_run=False)  # Actually import now
+            else:
+                messages.add_message(request, messages.ERROR, "El formato del archivo excel no es el correcto")
+                return redirect('/admin')
+        return render(request, 'importarExcel.html')
+    else:
+        messages.add_message(request, messages.ERROR, "permiso denegado")
+        return redirect('/admin')
+
+
+# Función para validar los que todos los campos del fichero .xlsx son correctos
+def validate_dataset(dataset):
+    if(dataset.headers==['voting_id', 'voter_id']):
+        votaciones = Voting.objects.all()
+        voters = User.objects.all()
+        for row in dataset:
+            votante_filtrado = voters.filter(id=row[1])
+            votacion_filtrada = votaciones.filter(id=row[0])
+            if(len(votacion_filtrada) == 0 or len(votante_filtrado) == 0):
+                return False
+        return True   
+    else:
+        return False
+            
