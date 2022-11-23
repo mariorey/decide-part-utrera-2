@@ -1,0 +1,31 @@
+    <nav class="navbar navbar-default">
+         <a class="navbar-brand" href="/census/home">
+              <img src="https://i.imgur.com/sqP7iLI.png" width="70" height="23.2" alt="">
+         </a>
+            <div class="container-fluid">
+         <ul class="nav navbar-nav">
+                <li><a href="/census/create">Crear censo</a></li>
+                <li><a href="/census/voting">Votantes por votación</a></li>
+                <li><a href="/census/census">Reutilizacion de censos antiguos</a></li>
+         </ul>
+            </div>
+     </nav>  
+
+{% block content%}
+
+
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}
+
+{% block extrabody %}
+{% endblock %}
