@@ -11,7 +11,6 @@ from rest_framework.status import (
 )
 
 from django.utils.datastructures import MultiValueDictKeyError
-from tablib import Dataset
 from base.perms import UserIsStaff
 from .models import Census
 from django.contrib.auth.decorators import login_required
@@ -26,7 +25,6 @@ from .admin import CensusResource
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
-
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -97,7 +95,8 @@ def votersInVoting(request, voting_id):
 def showVotings(request):
     votings = Voting.objects.all()
     context = {
-        'votings': votings
+        'votings': votings,
+        'user' : request.user
     }
     return render(request, "showAllVotings.html", context)
 
@@ -126,7 +125,7 @@ def createCensus(request, voting_id):
         }
         return render(request, "createCensus.html", context)
 
-def deleteCensus(request, voting_id, voter_id):
+def deleteVoter(request, voting_id, voter_id):
     if request.user.is_staff:
         census = Census.objects.get(voting_id = voting_id, voter_id = voter_id)
         try:
@@ -138,6 +137,19 @@ def deleteCensus(request, voting_id, voter_id):
         messages.add_message(
                         request, messages.ERROR, "El usuario no tiene permisos de administrador")
     return redirect('/census/voting/%s' % (voting_id))
+
+def deleteCensus(request, voting_id, voter_id):
+    if request.user.is_staff:
+        census = Census.objects.get(voting_id = voting_id, voter_id = voter_id)
+        try:
+            census.delete()
+        except IntegrityError:
+            messages.add_message(
+                        request, messages.ERROR, "No se ha podido eliminar al votante")
+    else:
+        messages.add_message(
+                        request, messages.ERROR, "El usuario no tiene permisos de administrador")
+    return redirect('/census/showAll')
 
 def importCensusFromLdapVotacion(request):
     """This method processes the parameters sent by the form to call the connection method and the import LDAP method
@@ -229,7 +241,6 @@ def validate_dataset(dataset):
     else:
         return False
             
-=======
 def export(request,format):
 
     """
