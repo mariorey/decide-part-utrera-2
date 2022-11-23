@@ -15,6 +15,7 @@ from ldap3.core.exceptions import LDAPBindError
 from tablib import Dataset
 from base.perms import UserIsStaff
 from .models import Census
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .resources import CensusResource
 from django.contrib import messages
@@ -65,6 +66,35 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+
+def reuseCensus(request, new_voting, old_voting):
+    '''
+    This function creates new census instances for a new voting, reusing the voters from the census of an already existing voting 
+    
+
+    args:
+
+    request:
+    new_voting: Identifier of the voting in which we want to reuse the voters
+    old_voting: Identifier of the voting from where we want to reuse the voters
+
+
+
+    '''
+    voters=Census.objects.filter(voting_id=old_voting).values_list('voter_id', flat=True) 
+    votersNoDuplicate = set()
+
+    for v in voters:
+        votersNoDuplicate.add(v)
+
+
+    for v in list(votersNoDuplicate): 
+        census = Census(voting_id=new_voting, voter_id= v)
+        census.save()
+
+
+    return HttpResponse('REUTILIZADO CON ÉXITO')
 
 
 def censusShow(request):

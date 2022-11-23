@@ -5,6 +5,7 @@ from census.views import *
 urlpatterns = [
     path('', views.CensusCreate.as_view(), name='census_create'),
     path('<int:voting_id>/', views.CensusDetail.as_view(), name='census_detail'),
+    path('reuse/<int:old_voting>/<int:new_voting>/',views.reuseCensus),
     path('showAll/', views.censusShow, name='ShowAllCensus'),
     path('detail/<int:id>/',views.censusShowDetails,name ="showDetails"),
     path('voting/<int:voting_id>', views.votersInVoting, name = "votersInVoting"),
@@ -17,5 +18,4 @@ urlpatterns = [
     path('export/<format>/',views.export),
     path('exportbyVoting/<int:voting_id>/<format>/',views.exportByVoting, name='exportByVoting'),
     path('exportbyVoter/<int:voter_id>/<format>/',views.exportByVoter)
-
 ]

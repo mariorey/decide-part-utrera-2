@@ -76,11 +76,33 @@ class CensusTestCase(BaseTestCase):
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
+        
+    def test_import(self):
+        #Creamos el usuario con privilegios de administrador
+        admin = User(username='administrado')
+        admin.set_password('1234567asd')
+        admin.is_staff = True
+        admin.save()
 
+        # GET the import form
+        self.client.force_login(admin)
+        response = self.client.get('/census/importExcel/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'importarExcel.html')
 
-
-    def test_ldap_check_votacion_pass(self):
-
+        # POST the import form
+        input_format = 'xlsfile'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'importar.xlsx')
+        with open(filename, "rb") as f:
+            data = {
+                'xlsfile': f,
+            }
+            response = self.client.post('/census/voting/', data)
+        self.assertEqual(response.status_code, 200)
+        
+     def test_ldap_check_votacion_pass(self):
         antes = Census.objects.count()
 
         #Guardamos al usuario a introducir que ya esta en el ldap
@@ -162,8 +184,16 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(antes,despues)
 
-class ExportCensusTest(BaseTestCase):
 
+
+class ReuseCensusTest(BaseTestCase):
+    def testReuse(self):
+        response = self.client.get('/census/reuse/1/2/')    
+        num_voters1=Census.objects.filter(voting_id=1).count()
+        num_voters2=Census.objects.filter(voting_id=2).count()
+        self.assertEquals(num_voters1, num_voters2)
+
+class ExportCensusTest(BaseTestCase):
     def setUp(self):
         self.census = Census(voting_id=1, voter_id=1)
         self.census.save()
@@ -173,7 +203,6 @@ class ExportCensusTest(BaseTestCase):
         super().tearDown()
         self.census = None
 
-    
     def testExportCsv(self):
         response = self.client.get('/census/export/csv/')
         self.assertEquals(response.get('Content-Type'), 'text/csv')
@@ -255,30 +284,3 @@ class ExportCensusByVotingTest(BaseTestCase):
     def testExportByVotingrror(self):
         response = self.client.get('/census/exportbyVoting/1/asdasf')
         self.assertEquals(response.status_code, 301)
-    
-    def test_import(self):
-
-        #Creamos el usuario con privilegios de administrador
-        admin = User(username='administrado')
-        admin.set_password('1234567asd')
-        admin.is_staff = True
-        admin.save()
-
-        # GET the import form
-        self.client.force_login(admin)
-        response = self.client.get('/census/importExcel/')
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'importarExcel.html')
-
-        # POST the import form
-        input_format = 'xlsfile'
-        filename = os.path.join(
-            os.path.dirname(__file__),
-            'importar.xlsx')
-        with open(filename, "rb") as f:
-            data = {
-                'xlsfile': f,
-            }
-            response = self.client.post('/census/voting/', data)
-        self.assertEqual(response.status_code, 200)
-
