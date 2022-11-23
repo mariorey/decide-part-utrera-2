@@ -102,7 +102,7 @@ class CensusTestCase(BaseTestCase):
             response = self.client.post('/census/voting/', data)
         self.assertEqual(response.status_code, 200)
         
-     def test_ldap_check_votacion_pass(self):
+    def test_ldap_check_votacion_pass(self):
         antes = Census.objects.count()
 
         #Guardamos al usuario a introducir que ya esta en el ldap
