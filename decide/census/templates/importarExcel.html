@@ -1,7 +1,28 @@
-{% block contenido %}  
-<form method="post" enctype="multipart/form-data">  
-   {% csrf_token %}  
- <input type="file" name="xlsfile">  
- <button type="submit">Subir</button>  
-</form>  
+{% extends 'nav.html' %}
+{% load i18n static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="utf-8" />
+      <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    </head> 
+<body>
+<div class="form">
+  <p>
+    Para poder añadir un censo en formato excel se debe añadir tal y como se muestra en la siguiente imagen:
+  </p>
+  <form method="post" enctype="multipart/form-data">  
+    {% csrf_token %}  
+  <input type="file" name="xlsfile">   
+  <button href="" type="submit"  value="Submit" class="btn btn-primary a-btn-slide-text">
+   <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
+   <span><strong>{% trans "Subir" %}</strong></span>
+ </button>
+ </form> 
+</div>
 {% endblock %}  
+</body>
+</html>
