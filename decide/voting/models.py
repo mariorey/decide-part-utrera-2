@@ -121,3 +121,9 @@ class Voting(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return "/census/voting/%s" %(self.id)  # type: ignore
+    
+    def end_date_null(self):
+        return self.end_date is None

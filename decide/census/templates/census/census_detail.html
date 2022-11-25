@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load i18n static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <title>{% block title %}Decide censos{% endblock %}</title>
+    </head>
+{% load i18n static %}
+<body>
+{% block content %}
+     <div>
+          <p> {{ census.id }}  |  {{ census.voter_id }}  |  {{ census.voting_id }}</p>
+          <br>
+     </div>
+
+     <div>
+          <button class="btn btn-danger" type="button"> Borrar Censo</button>
+          <button class="btn btn-primary" type="button"> Editar Censo</button>
+     </div>
+{% endblock %}
+
+{% block extrabody %}
+{% endblock %}
+
+</body>

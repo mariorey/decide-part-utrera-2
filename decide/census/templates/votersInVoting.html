@@ -1,0 +1,66 @@
+{% extends 'nav.html' %}
+{% load i18n static %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width = device-width, initial-scale = 1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    id="bootstrap-css" />
+  <title>{% block title %}Decide censos{% endblock %}</title>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+
+
+<body>
+  {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <table class="table table-hover table-sm">
+    <thead>
+      <tr>
+        <th scope="col">Username 
+        </th>
+        <th scope="col">Actions
+          <a href="{% url 'createCensus' voting_id %}" class="btn btn-primary a-btn-slide-text">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <span><strong>Add</strong></span>
+          </a>
+          <a href="{% url 'exportByVoting' voting_id format1 %}" class="btn btn-primary a-btn-slide-text">
+            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+            <span><strong>Exportar en CSV</strong></span>
+          </a>
+          <a href="{% url 'exportByVoting' voting_id format2 %}" class="btn btn-primary a-btn-slide-text">
+            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+            <span><strong>Exportar en XLS</strong></span>
+          </a>
+          <a href="{% url 'exportByVoting' voting_id format3 %}" class="btn btn-primary a-btn-slide-text">
+            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+            <span><strong>Exportar en JSON</strong></span>
+          </a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for voter in voters %}
+        <tr>
+        <th scope="row">{{ voter.username }}</th>
+        <td><a href="{% url 'deleteVoter' voting_id voter.id %}" class="btn btn-danger a-btn-slide-text">
+          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+           <span><strong>Delete</strong></span>            
+            </a>
+        </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+{% endblock %}
