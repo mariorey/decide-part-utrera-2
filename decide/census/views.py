@@ -96,6 +96,45 @@ def reuseCensus(request, new_voting, old_voting):
 
     return HttpResponse('REUTILIZADO CON ÉXITO')
 
+def reuseview(request):
+    if request.method == 'POST':
+                form = CensusReuseForm(request.POST)
+                if form.is_valid():
+                    old_voting = form.cleaned_data['oldVoting']
+                    new_voting = form.cleaned_data['newVoting']
+                    print(old_voting.id,new_voting.id)
+                    try:
+                        voters=Census.objects.filter(voting_id=old_voting.id).values_list('voter_id', flat=True) 
+                        votersNoDuplicate = set()
+
+                        for v in voters:
+                            votersNoDuplicate.add(v)
+
+
+                        for v in list(votersNoDuplicate): 
+                            census = Census(voting_id=new_voting.id, voter_id= v)
+                            census.save()
+
+                        return HttpResponse('REUTILIZADO CON ÉXITO')
+
+
+                    except :
+                          return HttpResponse('La votación objetivo ya tiene un censo')
+    else:
+        form = CensusReuseForm()
+        context = {
+                'form': form
+        }
+        return render(request, "reuseInterface.html", context)
+
+ 
+
+
+
+
+
+
+
 
 def censusShow(request):
     context = {
