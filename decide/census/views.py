@@ -101,6 +101,45 @@ def reuseCensus(request, new_voting, old_voting):
 
     return HttpResponse('REUTILIZADO CON ÉXITO')
 
+def reuseview(request):
+    if request.method == 'POST':
+                form = CensusReuseForm(request.POST)
+                if form.is_valid():
+                    old_voting = form.cleaned_data['oldVoting']
+                    new_voting = form.cleaned_data['newVoting']
+                    print(old_voting.id,new_voting.id)
+                    try:
+                        voters=Census.objects.filter(voting_id=old_voting.id).values_list('voter_id', flat=True) 
+                        votersNoDuplicate = set()
+
+                        for v in voters:
+                            votersNoDuplicate.add(v)
+
+
+                        for v in list(votersNoDuplicate): 
+                            census = Census(voting_id=new_voting.id, voter_id= v)
+                            census.save()
+
+                        return HttpResponse('REUTILIZADO CON ÉXITO')
+
+
+                    except :
+                          return HttpResponse('La votación objetivo ya tiene un censo')
+    else:
+        form = CensusReuseForm()
+        context = {
+                'form': form
+        }
+        return render(request, "reuseInterface.html", context)
+
+ 
+
+
+
+
+
+
+
 
 def censusShow(request):
     context = {
@@ -385,3 +424,95 @@ def exportByVoter(request, format, voter_id):
         response = HttpResponseBadRequest('Invalid format')
     return response
 
+def exportAllCensus(request):
+    if request.method == 'POST':
+            form = ExportAllCensusForm(request.POST)
+            if form.is_valid():
+                formato = form.cleaned_data['formato']
+                try:
+                    census_resource = CensusResource()
+                    dataset = census_resource.export()
+                    if formato == 'csv':
+                        response = HttpResponse(dataset.csv, content_type='text/csv')
+                        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+                    elif formato == 'xls':
+                        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+                        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+                    elif formato == 'json':
+                        response = HttpResponse(dataset.json, content_type='application/json')
+                        response['Content-Disposition'] = 'attachment; filename="census.json"'
+                    else:
+                        response = HttpResponseBadRequest('Invalid format')
+                    return response
+                except :
+                     return HttpResponse("Ha ocurrido un error inesperado, sentimos las molestias")
+    else:
+        form = ExportAllCensusForm()
+        context = {
+            'form': form
+        }
+        return render(request, "exportAllCensus.html", context)
+
+def exportCensusByVoter(request):
+    if request.method == 'POST':
+            form = ExportCensusByVoterForm(request.POST)
+            if form.is_valid():
+                formato = form.cleaned_data['formato']
+                voter = form.cleaned_data['voter']
+                try:
+                    census_resourse = CensusResource()
+                    dataset = census_resourse.export(Census.objects.filter(voter_id=voter.id))
+                    if formato == 'csv':
+                        response = HttpResponse(dataset.csv, content_type='text/csv')
+                        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+                    elif formato == 'xls':
+                        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+                        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+                    elif formato =='json':
+                        response = HttpResponse(dataset.json, content_type='application/json')
+                        response['Content-Disposition'] = 'attachment; filename="census.json"'
+                    else:
+                        response = HttpResponseBadRequest('Invalid format')
+                    return response
+                except :
+                     return HttpResponse("Ha ocurrido un error inesperado, sentimos las molestias")
+
+    else:
+        form = ExportCensusByVoterForm()
+        context = {
+            'form': form
+        }
+        return render(request, "exportCensusByVoter.html", context)
+
+
+def exportCensusByVoting(request):
+    if request.method == 'POST':
+            form = ExportCensusByVotingForm(request.POST)
+            if form.is_valid():
+                formato = form.cleaned_data['formato']
+                voting = form.cleaned_data['voting']
+                try:
+                    census_resourse = CensusResource()
+                    dataset = census_resourse.export(Census.objects.filter(voting_id=voting.id))
+                    if formato == 'csv':
+                        response = HttpResponse(dataset.csv, content_type='text/csv')
+                        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+                    elif formato == 'xls':
+                        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+                        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+                    elif formato =='json':
+                        response = HttpResponse(dataset.json, content_type='application/json')
+                        response['Content-Disposition'] = 'attachment; filename="census.json"'
+                    else:
+                        response = HttpResponseBadRequest('Invalid format')
+
+                    return response
+                except :
+                     return HttpResponse("Ha ocurrido un error inesperado, sentimos las molestias")
+
+    else:
+        form = ExportCensusByVotingForm()
+        context = {
+            'form': form
+        }
+        return render(request, "exportCensusByVoting.html", context)

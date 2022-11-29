@@ -1,0 +1,38 @@
+{% extends 'nav.html' %}
+{% load i18n static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <title>{% block title %}{% trans 'Exportación de todos los censos' %}{% endblock %}</title>
+        <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    </head>
+
+<body>
+
+    <div class="form">
+        <h4>{% trans 'Exportación de todos los censos ' %}</h4>
+
+        <div class="form">
+            <form action="{% url 'exportAllCensus' %}" method="POST">
+                {% csrf_token %}
+                {{ form }}
+                
+                <button href="" type="submit"  value="Submit" class="btn btn-warning a-btn-slide-text">
+                    <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                    <span><strong>{% trans 'Exportar Censos' %}</strong></span>
+                  </button>
+            </form>
+            <br/><br/>
+        </div>
+
+    </div>
+</div>    
+</body>
+</html>
+
+{% endblock %}

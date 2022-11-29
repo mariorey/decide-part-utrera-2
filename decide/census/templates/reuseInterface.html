@@ -1,0 +1,36 @@
+{% extends 'nav.html' %}
+{% load i18n static %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <title>{% block title %}Reutilizar Censo{% endblock %}</title>
+    </head>
+
+    <body>
+        <div class="form">
+            <form method="POST" action="{% url 'reuseview'%}">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <td><label>{% trans 'Seleccionar votacion antigua' %}</label>{{ form.oldVoting }}</td>
+                    </tr>
+                    <tr>
+                        <td><label>{% trans 'Seleccionar votacion objetivo' %}</label>{{ form.newVoting }}</td>
+                    </tr>
+                
+      
+                </table>
+                <br/>
+                <button href="" type="submit"  value="Submit" class="btn btn-primary a-btn-slide-text">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <span><strong>{% trans "Reutilizar Censo" %}</strong></span>
+                  </button>
+            </form>
+        </div>
+    </body>
+</html>
+{% endblock %}
