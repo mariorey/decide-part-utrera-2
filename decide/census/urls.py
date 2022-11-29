@@ -20,7 +20,7 @@ urlpatterns = [
     path('exportbyVoter/<int:voter_id>/<format>/',views.exportByVoter),
     path('exportAllCensus/',views.exportAllCensus, name = 'exportAllCensus'),
     path('exportCensusByVoter/',views.exportCensusByVoter, name = 'exportCensusByVoter'),
-    path('exportCensusByVoting/',views.exportCensusByVoting, name = 'exportCensusByVoting')
+    path('exportCensusByVoting/',views.exportCensusByVoting, name = 'exportCensusByVoting'),
     path('reuseview/',views.reuseview),
     path('reuse/',views.reuseview, name="reuseview")    
 ]
