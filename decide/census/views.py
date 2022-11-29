@@ -380,3 +380,31 @@ def exportByVoter(request, format, voter_id):
         response = HttpResponseBadRequest('Invalid format')
     return response
 
+def exportAllCensus(request):
+    if request.method == 'POST':
+            form = ExportAllCensusForm(request.POST)
+            if form.is_valid():
+                formato = form.cleaned_data['formato']
+                try:
+                    census_resource = CensusResource()
+                    dataset = census_resource.export()
+                    if formato == 'csv':
+                        response = HttpResponse(dataset.csv, content_type='text/csv')
+                        response['Content-Disposition'] = 'attachment; filename="census.csv"'
+                    elif formato == 'xls':
+                        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+                        response['Content-Disposition'] = 'attachment; filename="census.xls"'
+                    elif formato == 'json':
+                        response = HttpResponse(dataset.json, content_type='application/json')
+                        response['Content-Disposition'] = 'attachment; filename="census.json"'
+                    else:
+                        response = HttpResponseBadRequest('Invalid format')
+                    return response
+                except :
+                     return HttpResponse("Ha ocurrido un error inesperado, sentimos las molestias")
+    else:
+        form = ExportAllCensusForm()
+        context = {
+            'form': form
+        }
+        return render(request, "exportAllCensus.html", context)

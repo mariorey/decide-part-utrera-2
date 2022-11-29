@@ -4,6 +4,11 @@ from voting.models import *
 from census.models import Census
 from django.forms import ModelMultipleChoiceField
 
+FORMAT = [
+    ('csv','csv'),
+    ('xls','xls'),
+    ('json','json'),
+    ]
 
 class CensusCreateForm(forms.Form):
     voters = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
@@ -36,3 +41,14 @@ class CensusAddLdapFormVotacion(forms.Form):
     pwd = forms.CharField(label='Contraseña del administrador LDAP',
                                 widget=forms.TextInput(attrs={'placeholder': 'Password'}), required=True)
 
+
+class ExportAllCensusForm(forms.Form):
+    formato = forms.ChoiceField(choices = FORMAT)
+"""
+class ExportCensusByVotingForm(forms.Form):
+    voters = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
+
+
+class ExportCensusByVoterForm(forms.Form):
+    voters = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
+"""
