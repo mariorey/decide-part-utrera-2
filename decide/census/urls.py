@@ -2,6 +2,7 @@ from django.urls import path, include
 from . import views
 from census.views import *
 
+
 urlpatterns = [
     path('', views.CensusCreate.as_view(), name='census_create'),
     path('<int:voting_id>/', views.CensusDetail.as_view(), name='census_detail'),
@@ -17,5 +18,8 @@ urlpatterns = [
     path('importExcel/', importar, name='importExcel'),
     path('export/<format>/',views.export),
     path('exportbyVoting/<int:voting_id>/<format>/',views.exportByVoting, name='exportByVoting'),
-    path('exportbyVoter/<int:voter_id>/<format>/',views.exportByVoter)
+    path('exportbyVoter/<int:voter_id>/<format>/',views.exportByVoter),
+    path('login',Login.as_view(template_name='login.html'), name="login"),
+    path('logout',Logout.as_view(), name="logout"),
+    path('register',views.register, name="register")
 ]
