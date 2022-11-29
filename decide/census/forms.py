@@ -47,10 +47,10 @@ class ExportAllCensusForm(forms.Form):
 
 class ExportCensusByVoterForm(forms.Form):
     formato = forms.ChoiceField(choices = FORMAT)
-    voter = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
+    voter = forms.ModelChoiceField(label='Votante por el que filtrar', queryset=User.objects.all(), required=True)
 
-"""
+
 class ExportCensusByVotingForm(forms.Form):
     formato = forms.ChoiceField(choices = FORMAT)
-    voters = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
-"""
+    voting = forms.ModelChoiceField(label='Votación por la que filtrar', queryset=Voting.objects.all(), required=True)
+
