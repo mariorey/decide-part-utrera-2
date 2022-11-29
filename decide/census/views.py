@@ -82,17 +82,22 @@ def reuseCensus(request, new_voting, old_voting):
 
 
     '''
-    voters=Census.objects.filter(voting_id=old_voting).values_list('voter_id', flat=True) 
-    votersNoDuplicate = set()
 
-    for v in voters:
-        votersNoDuplicate.add(v)
+    try:
+        voters=Census.objects.filter(voting_id=old_voting).values_list('voter_id', flat=True) 
+        votersNoDuplicate = set()
+        
+        for v in voters:
+            votersNoDuplicate.add(v)
 
 
-    for v in list(votersNoDuplicate): 
-        census = Census(voting_id=new_voting, voter_id= v)
-        census.save()
-
+        for v in list(votersNoDuplicate): 
+            census = Census(voting_id=new_voting, voter_id= v)
+            census.save()
+    except:
+        return HttpResponse('el censo objetivo no está vacio')
+  
+               
 
     return HttpResponse('REUTILIZADO CON ÉXITO')
 
