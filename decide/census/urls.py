@@ -18,5 +18,6 @@ urlpatterns = [
     path('export/<format>/',views.export),
     path('exportbyVoting/<int:voting_id>/<format>/',views.exportByVoting, name='exportByVoting'),
     path('exportbyVoter/<int:voter_id>/<format>/',views.exportByVoter),
-    path('exportAllCensus/',views.exportAllCensus, name = 'exportAllCensus')
+    path('exportAllCensus/',views.exportAllCensus, name = 'exportAllCensus'),
+    path('exportCensusByVoter/',views.exportCensusByVoter, name = 'exportCensusByVoter')
 ]

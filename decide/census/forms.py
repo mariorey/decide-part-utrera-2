@@ -44,11 +44,13 @@ class CensusAddLdapFormVotacion(forms.Form):
 
 class ExportAllCensusForm(forms.Form):
     formato = forms.ChoiceField(choices = FORMAT)
-"""
-class ExportCensusByVotingForm(forms.Form):
-    voters = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
-
 
 class ExportCensusByVoterForm(forms.Form):
+    formato = forms.ChoiceField(choices = FORMAT)
+    voter = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
+
+"""
+class ExportCensusByVotingForm(forms.Form):
+    formato = forms.ChoiceField(choices = FORMAT)
     voters = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
 """
