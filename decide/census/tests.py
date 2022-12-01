@@ -12,6 +12,7 @@ from voting.models import *
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 class CensusTestCase(BaseTestCase):
@@ -201,7 +202,9 @@ class ImportCensusTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(antes,despues)
     
-    def test_importLDAPtest_pass(self):
+
+        
+    def test_1_importLDAPtest_pass(self):
         self.driver.get("http://127.0.0.1:8000/admin/login/?next=/admin/")
         self.driver.set_window_size(1552, 840)
         self.driver.find_element(By.ID, "id_username").send_keys("decide")
@@ -260,10 +263,12 @@ class ImportCensusTest(BaseTestCase):
         assert self.driver.find_element(By.XPATH, "//tbody/tr[2]/th").text == "boyle"
         assert self.driver.find_element(By.XPATH, "//tbody/tr[3]/th").text == "nobel"
         assert self.driver.find_element(By.XPATH, "//tbody/tr[4]/th").text == "pasteur"
+        self.driver.get("http://127.0.0.1:8000/admin/")
+        self.driver.find_element(By.CSS_SELECTOR, "a:nth-child(4)").click()
+    
 
 
-"""
-    def test_importLDAPtest_fail(self):
+    def test_2_importLDAPtest_fail(self):
         self.driver.get("http://127.0.0.1:8000/admin/login/?next=/admin/")
         self.driver.set_window_size(1552, 840)
         self.driver.find_element(By.ID, "id_username").send_keys("decide")
@@ -271,9 +276,17 @@ class ImportCensusTest(BaseTestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".submit-row > input").click()
         self.driver.get("http://127.0.0.1:8000/census/voting/")
         self.driver.find_element(By.LINK_TEXT, "Importar censo desde LDAP").click()
-        self.driver.find_element(By.ID, "id_voting").click()
         dropdown = self.driver.find_element(By.ID, "id_voting")
         dropdown.find_element(By.XPATH, "//option[. = 'Betis o Sevilla']").click()
+        element = self.driver.find_element(By.ID, "id_voting")
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).click_and_hold().perform()
+        element = self.driver.find_element(By.ID, "id_voting")
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).perform()
+        element = self.driver.find_element(By.ID, "id_voting")
+        actions = ActionChains(self.driver)
+        actions.move_to_element(element).release().perform()
         self.driver.find_element(By.ID, "id_urlLdap").click()
         self.driver.find_element(By.ID, "id_urlLdap").send_keys("ldap.forumsys.com:389")
         self.driver.find_element(By.ID, "id_treeSufix").click()
@@ -283,13 +296,12 @@ class ImportCensusTest(BaseTestCase):
         self.driver.find_element(By.ID, "id_pwd").click()
         self.driver.find_element(By.ID, "id_pwd").send_keys("password")
         self.driver.find_element(By.CSS_SELECTOR, "strong").click()
-        self.driver.find_element(By.LINK_TEXT, "Betis o Sevilla").click()
-        assert self.driver.find_element(By.CLASS_NAME, "alert-danger").text == "El usuario curie ya se encuentra en la base de datos"
-        assert self.driver.find_element(By.CLASS_NAME, "alert-danger").text == "El usuario boyle ya se encuentra en la base de datos"
-        assert self.driver.find_element(By.CLASS_NAME, "alert-danger").text == "El usuario nobel ya se encuentra en la base de datos"
-        assert self.driver.find_element(By.CLASS_NAME, "alert-danger").text == "El usuario pasteur ya se encuentra en la base de datos"
-"""
+        assert self.driver.find_element(By.CSS_SELECTOR, ".alert-danger:nth-child(1)").text == "El usuario curie ya se encuentra en la base de datos"
+        assert self.driver.find_element(By.CSS_SELECTOR, ".alert-danger:nth-child(2)").text == "El usuario boyle ya se encuentra en la base de datos"
+        assert self.driver.find_element(By.CSS_SELECTOR, ".alert-danger:nth-child(3)").text == "El usuario nobel ya se encuentra en la base de datos"
+        assert self.driver.find_element(By.CSS_SELECTOR, ".alert-danger:nth-child(4)").text == "El usuario pasteur ya se encuentra en la base de datos"
     
+
 
 
 class ReuseCensusTest(BaseTestCase):
