@@ -1,28 +1,82 @@
 {% extends 'nav.html' %}
 {% load i18n static %}
+{% load static %}
 {% block content %}
 
 <!DOCTYPE html>
 <html>
-    <head>
-      <meta charset="utf-8" />
-      <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+
+<head>
+  <style>
+    .center {
+      margin: auto;
+      width: 60%;
+      padding: 10px;
+      text-align: center;
+    }
+
+    body {
+      background-color: #f0f0f0;
+      font: 100% / 162% verdana, arial, helvetica, sans-serif;
+    }
+
+
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td,
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width = device-width, initial-scale = 1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-    </head> 
+</head>
+
 <body>
-<div class="form">
-  <p>
-    Para poder añadir un censo en formato excel se debe añadir tal y como se muestra en la siguiente imagen:
-  </p>
-  <form method="post" enctype="multipart/form-data">  
-    {% csrf_token %}  
-  <input type="file" name="xlsfile">   
-  <button href="" type="submit"  value="Submit" class="btn btn-primary a-btn-slide-text">
-   <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-   <span><strong>{% trans "Subir" %}</strong></span>
- </button>
- </form> 
-</div>
-{% endblock %}  
+  <div class="center">
+
+    <label>CONDICIONES:</label>
+    <p>Votante y votación deben existir previamente para que se pueda crear el censo. </p>
+    <p>Para poder añadir un censo en formato excel se debe añadir tal y como se muestra en la siguiente tabla: </p>
+
+    <table>
+      <tr>
+        <th>voting_id</th>
+        <th>voter_id</th>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>5</td>
+      </tr>
+      <tr>
+        <td>19</td>
+        <td>17</td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td>11</td>
+      </tr>
+
+    </table>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label class="center" for="customFile">Subir archivo en formato .xlsx</label>
+      <br />
+      <input class="center" type="file" style="width: 300px;">
+      <br />
+      <button href="" type="submit" value="Submit" class="btn btn-primary a-btn-slide-text">
+        <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
+        <span><strong>{% trans "Subir" %}</strong></span>
+      </button>
+    </form>
+  </div>
+  {% endblock %}
 </body>
 </html>
