@@ -21,5 +21,10 @@ urlpatterns = [
     path('exportbyVoter/<int:voter_id>/<format>/',views.exportByVoter),
     path('login',Login.as_view(template_name='login.html'), name="login"),
     path('logout',Logout.as_view(), name="logout"),
-    path('register',views.register, name="register")
+    path('register',views.register, name="register"),
+    path('exportAllCensus/',views.exportAllCensus, name = 'exportAllCensus'),
+    path('exportCensusByVoter/',views.exportCensusByVoter, name = 'exportCensusByVoter'),
+    path('exportCensusByVoting/',views.exportCensusByVoting, name = 'exportCensusByVoting'),
+    path('reuseview/',views.reuseview),
+    path('reuse/',views.reuseview, name="reuseview")    
 ]

@@ -5,9 +5,18 @@ from census.models import Census
 from django.forms import ModelMultipleChoiceField
 from django.contrib.auth.forms import UserCreationForm
 
+FORMAT = [
+    ('csv','csv'),
+    ('xls','xls'),
+    ('json','json'),
+    ]
 
 class CensusCreateForm(forms.Form):
     voters = forms.ModelChoiceField(label='Votante que se va a añadir', queryset=User.objects.all(), required=True)
+
+class CensusReuseForm(forms.Form):
+    oldVoting = forms.ModelChoiceField(label='Votacion de la que se va a reutilizar censo', queryset=Voting.objects.all(), required=True)
+    newVoting = forms.ModelChoiceField(label='Votacion a la que se va a copiar censo', queryset=Voting.objects.all(), required=True)
 
 class CensusAddLdapFormVotacion(forms.Form):
     """This form contains the necessary data to perform the LDAP method.
@@ -47,4 +56,17 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
         help_texts = {k:"" for k in fields}
+
+
+class ExportAllCensusForm(forms.Form):
+    formato = forms.ChoiceField(choices = FORMAT)
+
+class ExportCensusByVoterForm(forms.Form):
+    formato = forms.ChoiceField(choices = FORMAT)
+    voter = forms.ModelChoiceField(label='Votante por el que filtrar', queryset=User.objects.all(), required=True)
+
+
+class ExportCensusByVotingForm(forms.Form):
+    formato = forms.ChoiceField(choices = FORMAT)
+    voting = forms.ModelChoiceField(label='Votación por la que filtrar', queryset=Voting.objects.all(), required=True)
 
