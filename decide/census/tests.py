@@ -8,11 +8,16 @@ import os.path
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from voting.models import *
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class CensusTestCase(BaseTestCase):
@@ -205,7 +210,7 @@ class ImportCensusTest(BaseTestCase):
 
         
     def test_1_importLDAPtest_pass(self):
-        self.driver.get("http://127.0.0.1:8000/admin/login/?next=/admin/")
+        self.driver.get("http://127.0.0.1:55257/admin/login/?next=/admin/")
         self.driver.set_window_size(1552, 840)
         self.driver.find_element(By.ID, "id_username").send_keys("decide")
         self.driver.find_element(By.ID, "id_password").send_keys("complexpassword")
@@ -244,7 +249,7 @@ class ImportCensusTest(BaseTestCase):
         dropdown = self.driver.find_element(By.NAME, "action")
         dropdown.find_element(By.XPATH, "//option[. = 'Start']").click()
         self.driver.find_element(By.NAME, "index").click()
-        self.driver.get("http://127.0.0.1:8000/census/voting/")
+        self.driver.get("http://127.0.0.1:55257/census/voting/")
         self.driver.find_element(By.LINK_TEXT, "Importar censo desde LDAP").click()
         self.driver.find_element(By.ID, "id_voting").click()
         dropdown = self.driver.find_element(By.ID, "id_voting")
@@ -263,18 +268,18 @@ class ImportCensusTest(BaseTestCase):
         assert self.driver.find_element(By.XPATH, "//tbody/tr[2]/th").text == "boyle"
         assert self.driver.find_element(By.XPATH, "//tbody/tr[3]/th").text == "nobel"
         assert self.driver.find_element(By.XPATH, "//tbody/tr[4]/th").text == "pasteur"
-        self.driver.get("http://127.0.0.1:8000/admin/")
+        self.driver.get("http://127.0.0.1:55257/admin/")
         self.driver.find_element(By.CSS_SELECTOR, "a:nth-child(4)").click()
     
 
 
     def test_2_importLDAPtest_fail(self):
-        self.driver.get("http://127.0.0.1:8000/admin/login/?next=/admin/")
+        self.driver.get("http://127.0.0.1:55257/admin/login/?next=/admin/")
         self.driver.set_window_size(1552, 840)
         self.driver.find_element(By.ID, "id_username").send_keys("decide")
         self.driver.find_element(By.ID, "id_password").send_keys("complexpassword")
         self.driver.find_element(By.CSS_SELECTOR, ".submit-row > input").click()
-        self.driver.get("http://127.0.0.1:8000/census/voting/")
+        self.driver.get("http://127.0.0.1:55257/census/voting/")
         self.driver.find_element(By.LINK_TEXT, "Importar censo desde LDAP").click()
         dropdown = self.driver.find_element(By.ID, "id_voting")
         dropdown.find_element(By.XPATH, "//option[. = 'Betis o Sevilla']").click()
@@ -402,3 +407,39 @@ class ExportCensusByVotingTest(BaseTestCase):
     def testExportByVotingrror(self):
         response = self.client.get('/census/exportbyVoting/1/asdasf')
         self.assertEquals(response.status_code, 301)
+
+
+class AdministratorViewCensusTest(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver = webdriver.Chrome(options=options)
+
+    def teardown_method(self, method):
+        self.driver.quit()
+  
+    def test_show_all(self):
+        censo1 = Census(voting_id=1, voter_id=1)
+        censo1.save()
+        censo2 = Census(voting_id=2, voter_id=1)
+        censo2.save()
+        censo3 = Census(voting_id=3, voter_id=1)
+        censo3.save()
+        self.driver.get(f'{self.live_server_url}/census/showAll')
+        censo1_voter_id = self.driver.find_element(By.ID, "voter_"+str(censo1.id)).text
+        self.assertTrue(censo1_voter_id, str(censo1.voter_id))
+        censo1_voting_id = self.driver.find_element(By.ID, "voting_"+str(censo1.id)).text
+        self.assertTrue(censo1_voting_id, str(censo1.voting_id))
+        censo2_voter_id = self.driver.find_element(By.ID, "voting_"+str(censo2.id)).text
+        self.assertTrue(censo2_voter_id, str(censo2.voter_id))
+        censo2_voting_id = self.driver.find_element(By.ID, "voting_"+str(censo2.id)).text
+        self.assertTrue(censo2_voting_id, str(censo2.voting_id))
+        censo3_voter_id = self.driver.find_element(By.ID, "voter_"+str(censo3.id)).text
+        self.assertTrue(censo3_voter_id, str(censo3.voter_id))
+        censo3_voting_id = self.driver.find_element(By.ID, "voting_"+str(censo3.id)).text
+        self.assertTrue(censo3_voting_id, str(censo3.voting_id))
+        
+    
