@@ -1,5 +1,6 @@
 import random
 import datetime
+import time
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -441,5 +442,89 @@ class AdministratorViewCensusTest(StaticLiveServerTestCase):
         self.assertTrue(censo3_voter_id, str(censo3.voter_id))
         censo3_voting_id = self.driver.find_element(By.ID, "voting_"+str(censo3.id)).text
         self.assertTrue(censo3_voting_id, str(censo3.voting_id))
+
+
+
+class login(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver = webdriver.Chrome(options=options)
+
+    def teardown_method(self, method):
+        self.driver.quit()
+  
+    def test_login(self):
+        self.driver.get(f'{self.live_server_url}/census/login')
+        username = self.driver.find_element_by_name("username")
+        password = self.driver.find_element_by_name("password")
+        time.sleep(5)
+        submit = self.driver.find_element_by_name("submit")
+
+        username.send_keys('admin')
+        password.send_keys('qwerty')
+        time.sleep(5)
+        submit.click()
+        time.sleep(5)
+        assert 'Bienvenido,' in self.driver.page_source
+
+
         
-    
+class logout(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver = webdriver.Chrome(options=options)
+
+    def teardown_method(self, method):
+        self.driver.quit()
+  
+    def test_logout(self):
+        self.driver.get(f'{self.live_server_url}/census/login')
+        username = self.driver.find_element_by_name("username")
+        password = self.driver.find_element_by_name("password")
+        time.sleep(5)
+        submit = self.driver.find_element_by_name("submit")
+
+        username.send_keys('admin')
+        password.send_keys('qwerty')
+        time.sleep(5)
+        submit.click()
+        time.sleep(5)
+        logout = self.driver.find_element_by_name("logout")
+        logout.click()
+        assert 'Iniciar Sesión' in self.driver.page_source
+
+class register(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver = webdriver.Chrome(options=options)
+
+    def teardown_method(self, method):
+        self.driver.quit()
+  
+    def test_register(self):
+        self.driver.get(f'{self.live_server_url}/census/register')
+        username = self.driver.find_element_by_name("username")
+        email = self.driver.find_element_by_name("email")
+        password1 = self.driver.find_element_by_name("password1")
+        password2= self.driver.find_element_by_name("password2")
+        submit = self.driver.find_element_by_name("submit1")
+
+        username.send_keys('CharlesDarwin')
+        email.send_keys('charles@gmail.com')
+        password1.send_keys('evolutionisalie')
+        password2.send_keys('evolutionisalie')
+        time.sleep(5)
+        submit.click()
+        assert 'se ha registrado correctamente Sesión' in self.driver.page_source
