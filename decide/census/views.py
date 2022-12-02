@@ -17,6 +17,8 @@ from base.perms import UserIsStaff
 from .models import Census
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import UserRegisterForm
 from .resources import CensusResource
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -28,7 +30,38 @@ from .admin import CensusResource
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
+from django.contrib.auth.views import LoginView, LogoutView
 
+
+class Login(LoginView):
+    def get_redirect_url(self):
+        return "/census/showAll"
+
+class Logout(LogoutView):
+
+    def get_next_page(self):
+        messages.add_message(
+                        self.request, messages.SUCCESS, "El usuario ha cerrado sesión correctamente")
+        return "/census/showAll"
+
+
+
+
+
+def register(request):
+    if request.method=='POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            messages.add_message(
+                        request, messages.SUCCESS, "El usuario "+username+" se ha registrado correctamente")
+            return redirect('/census/showAll')
+    else:
+        form = UserRegisterForm()
+    context = { 'form':form }
+    return render(request, 'register.html', context) 
+    
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
 

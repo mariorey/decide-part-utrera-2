@@ -58,13 +58,37 @@
                   <a class="nav-link" href="/census/exportCensusByVoting">Exporta Censo por Votación</a>
                 </li>
               </li>
+                
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                <li class="nav-item" >
+                  <p> Bienvenido, <b>{{ request.user.username }}</b></p>
+                </li>
+                <li class="nav-item" style="margin:2.5px">
+                  <a class="nav-link" href="/census/logout">Cerrar Sesión</a>
+                </li>
+                {% else %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="/census/login">Iniciar Sesión</a>
+                  </li>
+                  <li class="nav-item" style="margin:2.5px">
+                    <a class="nav-link" href="/census/register">Registrarse</a>
+                  </li>
+                {% endif %}
               </ul>
             </div>
           </nav>
 
           
         </header>
-        
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
 {% block content%}
 {% endblock %}
 </body>
