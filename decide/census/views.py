@@ -231,12 +231,15 @@ def deleteCensus(request, voting_id, voter_id):
     return redirect('/census/showAll')
 
 def importCensusFromLdapVotacion(request):
-    """This method processes the parameters sent by the form to call the connection method and the import LDAP method
+    """
+
+        This method processes the parameters sent by the form to call the connection method and the import LDAP method
     to be able to create the census containing the users from the LDAP branch previously especified. This will work
     if the users are already registered on the system.  
         
     Args:
         request: contains the HTTP data of the LDAP import
+        
         """ 
     if request.user.is_staff:
 
@@ -261,6 +264,9 @@ def importCensusFromLdapVotacion(request):
                             userList.append(user)
                 except LDAPBindError:
                     messages.add_message(request, messages.ERROR, "Los datos del formulario son erróneos")            
+                    return redirect('/census/voting')
+                except :
+                    messages.add_message(request, messages.ERROR, "Ha ocurrido un error en la conexión con el servido LDAP")            
                     return redirect('/census/voting')
 
             if request.user.is_authenticated:
@@ -291,6 +297,18 @@ def importCensusFromLdapVotacion(request):
 
 #Este método sirve para exportar desde excel
 def importar(request):
+    """
+    This method is to import one or multiple census from an .xlsx file. The action needs to be performed by an admin user. 
+    
+    The method takes the xlsx file and it catches an exception if there is no sent file, then it creates a new
+    variable which has the content of the xlsx file. Then it calls the function validate_dataset to make sure there 
+    are no mistakes on the file. If there are no mistakes, it saves all the new census, otherwise it will redirect
+    to another page with a descriptive message 
+
+    Args:
+         request: contains the HTTP data of the form with the .xlsx file
+    """
+    
     if request.user.is_staff:
         if request.method == 'POST':
             census_resource = CensusResource()
@@ -313,8 +331,17 @@ def importar(request):
         messages.add_message(request, messages.ERROR, "permiso denegado")
         return redirect('/admin')
 
-# Función para validar los que todos los campos del fichero .xlsx son correctos
 def validate_dataset(dataset):
+    """
+    
+        This method validate the dataset that enter in the function importar(), we check that the headers and the values
+        of the dataset object and are correct to process it. This method returns True if the .xlsx file is correct and 
+        False in any other case.
+
+        Args:
+            dataset: object with the information of the .xlsx file
+            
+    """
     if(dataset.headers==['voting_id', 'voter_id']):
         votaciones = Voting.objects.all()
         voters = User.objects.all()
