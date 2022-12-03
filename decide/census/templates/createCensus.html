@@ -18,7 +18,7 @@
                     <td><label>{% trans 'Select Voter' %}</label> {{ form.voters }}</td>
                 </table>
                 <br/>
-                <button href="{% url 'createCensus' voting_id %}" type="submit"  value="Submit" class="btn btn-primary a-btn-slide-text">
+                <button name = "button" href="{% url 'createCensus' voting_id %}" type="submit"  value="Submit" class="btn btn-primary a-btn-slide-text">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                     <span><strong>{% trans "Add Voter" %}</strong></span>
                 </button>

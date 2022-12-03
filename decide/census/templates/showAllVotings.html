@@ -31,9 +31,9 @@
     <tbody>
       <tr>
         {% for voting in votings %}
-        <th scope="row"><a href="{{ voting.get_absolute_url }}"> {{ voting.name }} </a></th>
-        <td>{{ voting.desc }}</td>
-        <td>{% if voting.end_date_null %}
+        <th scope="row"><a href="{{ voting.get_absolute_url }}" id="name_{{ voting.id }}"> {{ voting.name }} </a></th>
+        <td id="desc_{{ voting.id }}" >{{ voting.desc }}</td>
+        <td id="date_{{ voting.id }}">{% if voting.end_date_null %}
           Votation in progress
           {% else %}
           from {{ voting.start_date }} to {{ voting.end_date }}

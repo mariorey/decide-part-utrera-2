@@ -7,6 +7,8 @@ from rest_framework.test import APIClient
 
 import os.path
 from .models import Census
+from voting.models import Voting, Question
+from base.models import Auth
 from base import mods
 from base.tests import BaseTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -19,7 +21,7 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
+from django.utils import timezone
 
 class CensusTestCase(BaseTestCase):
 
@@ -443,6 +445,73 @@ class AdministratorViewCensusTest(StaticLiveServerTestCase):
         censo3_voting_id = self.driver.find_element(By.ID, "voting_"+str(censo3.id)).text
         self.assertTrue(censo3_voting_id, str(censo3.voting_id))
 
+    def test_show_all_votings(self):
+        self.driver.get(f'{self.live_server_url}/census/login')
+        username = self.driver.find_element_by_name("username")
+        password = self.driver.find_element_by_name("password")
+        submit = self.driver.find_element_by_name("submit")
+        username.send_keys('admin')
+        password.send_keys('qwerty')
+        submit.click()
+        question = Question(desc="Es un test")
+        question.save()
+        auth = Auth(name="Test",url="Test")
+        auth.save()
+        voting1 = Voting(name="Test",desc="Es un test",question = question)
+        voting1.save()
+        voting1.auths.add(auth)
+        voting2 = Voting(name="Test",desc="Es un test",question = question,start_date=timezone.now(),end_date=timezone.now())
+        voting2.save()
+        voting2.auths.add(auth)
+        voter1 = User(username='voter1')
+        voter1.set_password('1234567asd')
+        voter1.save()
+        voter2 = User(username='voter2')
+        voter2.set_password('1234567asd')
+        voter2.save()
+        voter3 = User(username='voter3')
+        voter3.set_password('1234567asd')
+        voter3.save()
+        censo1 = Census(voting_id=voting1.id, voter_id=voter1.id)
+        censo1.save()
+        censo2 = Census(voting_id=voting1.id, voter_id=voter2.id)
+        censo2.save()
+        censo3 = Census(voting_id=voting1.id, voter_id=voter3.id)
+        censo3.save()
+        self.driver.get(f'{self.live_server_url}/census/voting')
+        voting1_name = self.driver.find_element(By.ID, "name_"+str(voting1.id)).text
+        self.assertTrue(voting1_name, voting1.name)
+        voting1_desc = self.driver.find_element(By.ID, "desc_"+str(voting1.id)).text
+        self.assertTrue(voting1_desc, voting1.desc)
+        voting1_date = self.driver.find_element(By.ID, "date_"+str(voting1.id)).text
+        self.assertTrue(voting1_date, "Votation in progress")
+        voting2_name = self.driver.find_element(By.ID, "name_"+str(voting2.id)).text
+        self.assertTrue(voting2_name, voting2.name)
+        voting2_desc = self.driver.find_element(By.ID, "desc_"+str(voting2.id)).text
+        self.assertTrue(voting2_desc, voting2.desc)
+        voting2_date = self.driver.find_element(By.ID, "date_"+str(voting2.id)).text
+        self.assertTrue(voting2_date, "from "+str(voting2.start_date)+" to "+str(voting2.end_date))
+
+        self.driver.get(f'{self.live_server_url}/census/voting/%s' %(voting1.id))
+
+        voter1_username = self.driver.find_element(By.ID, "username_"+str(voter1.id)).text
+        self.assertTrue(voter1_username, voter1.username)
+        voter2_username = self.driver.find_element(By.ID, "username_"+str(voter2.id)).text
+        self.assertTrue(voter2_username, voter2.username)
+        voter3_username = self.driver.find_element(By.ID, "username_"+str(voter3.id)).text
+        self.assertTrue(voter3_username, voter3.username)
+        delete = self.driver.find_element(By.ID, "delete_"+str(voter1.id))
+        delete.click()
+        census_count = Census.objects.filter(voting_id = voting1.id).count()
+        self.assertEquals(census_count,2)
+
+        self.driver.find_element(By.NAME,"add").click()
+        self.driver.find_element(By.XPATH,"//*[@id='id_voters']/option[text()='"+str(voter1.username)+"']").click()
+        self.driver.find_element(By.NAME,"button").click()
+        time.sleep(5)
+        voter1_username = self.driver.find_element(By.ID, "username_"+str(voter1.id)).text
+        self.assertTrue(voter1_username, voter1.username)
+
 
 
 class login(StaticLiveServerTestCase):
@@ -471,6 +540,19 @@ class login(StaticLiveServerTestCase):
         time.sleep(5)
         assert 'Bienvenido,' in self.driver.page_source
 
+    def test_negativo(self):
+        self.driver.get(f'{self.live_server_url}/census/login')
+        username = self.driver.find_element_by_name("username")
+        password = self.driver.find_element_by_name("password")
+        time.sleep(5)
+        submit = self.driver.find_element_by_name("submit")
+
+        username.send_keys('admin')
+        password.send_keys('qwert')
+        time.sleep(5)
+        submit.click()
+        time.sleep(5)
+        assert 'Please enter a correct username and password. Note that both fields may be case-sensitive.' in self.driver.page_source
 
         
 class logout(StaticLiveServerTestCase):
@@ -514,6 +596,7 @@ class register(StaticLiveServerTestCase):
         self.driver.quit()
   
     def test_register(self):
+    
         self.driver.get(f'{self.live_server_url}/census/register')
         username = self.driver.find_element_by_name("username")
         email = self.driver.find_element_by_name("email")
@@ -523,8 +606,25 @@ class register(StaticLiveServerTestCase):
 
         username.send_keys('CharlesDarwin')
         email.send_keys('charles@gmail.com')
-        password1.send_keys('evolutionisalie')
-        password2.send_keys('evolutionisalie')
-        time.sleep(5)
-        submit.click()
-        assert 'se ha registrado correctamente Sesión' in self.driver.page_source
+        password1.send_keys('evolutionisalie1')
+        password2.send_keys('evolutionisalie1',Keys.ENTER)
+        user = User.objects.get(username='CharlesDarwin')
+        self.assertEquals(user.username,'CharlesDarwin')
+        self.assertEquals(user.email,'charles@gmail.com')
+        assert 'se ha registrado correctamente' in self.driver.page_source
+        
+
+    def test_register_negative(self):
+        self.driver.get(f'{self.live_server_url}/census/register')
+        username = self.driver.find_element_by_name("username")
+        email = self.driver.find_element_by_name("email")
+        password1 = self.driver.find_element_by_name("password1")
+        password2= self.driver.find_element_by_name("password2")
+        submit = self.driver.find_element_by_name("submit1")
+
+        username.send_keys('Charles Darwin')
+        email.send_keys('a')
+        password1.send_keys('evolutionisalie1')
+        password2.send_keys('evolutionisalie1',Keys.ENTER)
+        assert 'se ha registrado correctamente' not in self.driver.page_source
+
