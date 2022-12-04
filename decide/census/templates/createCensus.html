@@ -1,0 +1,29 @@
+{% extends 'nav.html' %}
+{% load i18n static %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <title>{% block title %}Add Voter{% endblock %}</title>
+    </head>
+
+    <body>
+        <div class="form">
+            <form method="POST" action="{% url 'createCensus' voting_id%}">
+                {% csrf_token %}
+                <table>
+                    <td><label>{% trans 'Select Voter' %}</label> {{ form.voters }}</td>
+                </table>
+                <br/>
+                <button href="{% url 'createCensus' voting_id %}" type="submit"  value="Submit" class="btn btn-primary a-btn-slide-text">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <span><strong>{% trans "Add Voter" %}</strong></span>
+                </button>
+            </form>
+        </div>
+    </body>
+</html>
+{% endblock %}

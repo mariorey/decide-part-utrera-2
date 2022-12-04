@@ -1,0 +1,55 @@
+{% extends 'nav.html' %}
+{% load i18n static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <title>{% block title %}{% trans 'Import of census by LDAP' %}{% endblock %}</title>
+        <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    </head>
+
+<body>
+
+    <div class="form">
+        <h4>{% trans 'Añadir censo desde servidor LDAP' %}</h4>
+
+        <div class="form">
+            <form action="{% url 'addLDAPcensusVotacion' %}" method="POST">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <td><label>{% trans 'Seleccionar voto' %}</label>{{ form.voting }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><label>{% trans "URL del servidor LDAP: " %}</label>{{ form.urlLdap }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><label>{% trans "URL del dominio: " %}</label>{{ form.treeSufix }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><label>{% trans 'Rama a añadir: ' %}</label>{{ form.branch }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><label>{% trans 'Contraseña: ' %}</label>{{ form.pwd }}</td>
+                    </tr>
+ 
+                </table>
+                <br/>
+                <button href="" type="submit"  value="Submit" class="btn btn-primary a-btn-slide-text">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                    <span><strong>{% trans "Importar Censo" %}</strong></span>
+                  </button>
+            </form>
+            <br/><br/>
+        </div>
+
+    </div>
+</div>    
+</body>
+</html>
+
+{% endblock %}
