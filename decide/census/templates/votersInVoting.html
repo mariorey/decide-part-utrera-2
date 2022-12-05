@@ -24,8 +24,8 @@
         </th>
         <th scope="col">Actions
           {% if request.user.is_staff %}
-            <a href="{% url 'createCensus' voting_id %}" class="btn btn-primary a-btn-slide-text">
-              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <a name = "add"href="{% url 'createCensus' voting_id %}" class="btn btn-primary a-btn-slide-text">
+              <span id="add_{{ voting.id }}" class="glyphicon glyphicon-plus" aria-hidden="true"></span>
               <span><strong>Add</strong></span>
             </a>
           {% endif %}
@@ -47,11 +47,11 @@
     <tbody>
         {% for voter in voters %}
         <tr>
-        <th scope="row">{{ voter.username }}</th>
+        <th scope="row" id="username_{{ voter.id }}">{{ voter.username }}</th>
         <td>
           {% if request.user.is_staff %}
             <a href="{% url 'deleteVoter' voting_id voter.id %}" class="btn btn-danger a-btn-slide-text">         
-              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              <span id = "delete_{{ voter.id }}"class="glyphicon glyphicon-remove" aria-hidden="true"></span>
               <span><strong>Delete</strong></span>            
             </a>
           {% endif %}
