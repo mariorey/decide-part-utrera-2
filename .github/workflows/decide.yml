@@ -27,7 +27,7 @@ jobs:
       with:
         python-version: 3.8
     - name: psycopg2 prerequisites
-      run: sudo apt-get install libpq-dev
+      run: sudo apt-get install libpq-dev chromium-browser chromium-driver
     - name: Install dependencies and config
       run: |
         python -m pip install --upgrade pip
