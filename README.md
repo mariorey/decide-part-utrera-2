@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/wadobo/decide.svg?branch=master)](https://travis-ci.com/wadobo/decide) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3e42f27f4f2241a6bbb5f85bf43dd537)](https://www.codacy.com/gh/Decide-Part-Utrera/decide-part-utrera-2/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Decide-Part-Utrera/decide-part-utrera-2&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.com/wadobo/decide.svg?branch=master)](https://travis-ci.com/wadobo/decide) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3e42f27f4f2241a6bbb5f85bf43dd537)](https://www.codacy.com/gh/Decide-Part-Utrera/decide-part-utrera-2/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Decide-Part-Utrera/decide-part-utrera-2&amp;utm_campaign=Badge_Grade)  [![Python application](https://github.com/Decide-Part-Utrera/decide-part-utrera-2/actions/workflows/decide.yml/badge.svg?branch=bugfix)](https://github.com/Decide-Part-Utrera/decide-part-utrera-2/actions/workflows/decide.yml)
+
 
 Plataforma voto electrónico educativa
 =====================================
