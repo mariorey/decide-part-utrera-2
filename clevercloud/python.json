@@ -1,8 +1,9 @@
 {
     "build": {
-        "folder": "decide"
+        "cache_dependancies": true
     },
     "deploy": {
+        "folder" : "decide",
         "module": "decide.wsgi:application",
         "managetasks": [
 			"collectstatic --noinput",
