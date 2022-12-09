@@ -3,6 +3,7 @@
         "cache_dependancies": true
     },
     "deploy": {
+        "folder":"decide",
         "module": "decide.decide.wsgi:application",
         "managetasks": [
 			"collectstatic --noinput",
