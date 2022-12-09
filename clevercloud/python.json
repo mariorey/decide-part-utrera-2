@@ -1,6 +1,7 @@
 {
     "build": {
-        "folder": "decide"
+        "folder": "decide",
+        "cache_dependancies": true
     },
     "deploy": {
         "module": "decide.wsgi:application",
