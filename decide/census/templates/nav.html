@@ -28,7 +28,17 @@
                   <a class="nav-link" href="{% url 'showVotings' %}">Lista de votaciones</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Reutilizacion de censos antiguos</a>
+                  <a class="nav-link" href="/census/reuseview">Reutilizacion de censos antiguos</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Exportar censo
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a class="dropdown-item" href="/census/exportAllCensus">Exportar censo por votante</a></li>
+                    <li><a class="dropdown-item" href="/census/exportCensusByVoter">Exportar censo completo</a></li>
+                    <li><a class="dropdown-item" href="/census/exportCensusByVoting">Exportar censo por votación</a></li>
+                  </ul>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="/census/importExcel">Importar censo desde Excel</a>
@@ -36,23 +46,59 @@
                 <li class="nav-item">
                   <a class="nav-link" href="/census/addLDAPcensusVotacion">Importar censo desde LDAP</a>
                 </li>
+                <!--
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Exportar censo completo
                 </a>
+                 realizacion de exportacion del censo mas optimo pero con menos lineas de codigo :'(
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                   <li><a class="dropdown-item" href="/census/export/csv">Exportar a CSV</a></li>
                   <li><a class="dropdown-item" href="/census/export/xls">Exportar a XLS</a></li>
                   <li><a class="dropdown-item" href="/census/export/json">Exportar a JSON</a></li>
                 </ul>
+                -->
+                <!-- <li class="nav-item">
+                  <a class="nav-link" href="/census/exportAllCensus">Exporta Censo Completo</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/census/exportCensusByVoter">Exporta Censo por Votante</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/census/exportCensusByVoting">Exporta Censo por Votación</a>
+                </li> -->
               </li>
+                
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                <li class="nav-item" >
+                  <p> Bienvenido, <b>{{ request.user.username }}</b></p>
+                </li>
+                <li class="nav-item" style="margin:2.5px">
+                  <a class="nav-link" name="logout" href="/census/logout">Cerrar Sesión</a>
+                </li>
+                {% else %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="/census/login">Iniciar Sesión</a>
+                  </li>
+                  <li class="nav-item" style="margin:2.5px">
+                    <a class="nav-link" href="/census/register">Registrarse</a>
+                  </li>
+                {% endif %}
               </ul>
             </div>
           </nav>
 
           
         </header>
-        
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
 {% block content%}
 {% endblock %}
 </body>

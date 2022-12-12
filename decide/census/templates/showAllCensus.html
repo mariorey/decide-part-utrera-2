@@ -25,17 +25,16 @@
           <tr>
             {% for census in allCensus%}
             <th scope="row">{{ census.id }}</th>
-            <td>{{ census.voter_id }}</td>
-            <td>{{ census.voting_id }}</td>
-            <td><a href="#" class="btn btn-primary a-btn-slide-text">
-                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                <span><strong>Edit</strong></span>            
-            </a>
+            <td id='voter_{{ census.id }}'>{{ census.voter_id }}</td>
+            <td id='voting_{{ census.id }}'>{{ census.voting_id }}</td>
+            {% if request.user.is_staff %}
+            <td>
             <a href="{% url 'deleteCensus' census.voting_id census.voter_id %}" class="btn btn-danger a-btn-slide-text">
                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                  <span><strong>Delete</strong></span>            
              </a>
             </td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>
