@@ -29,8 +29,8 @@ APIS = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'postgres.sqlite3',
         'USER': 'decide',
         'PASSWORD':'complexpassword',
         'HOST': 'localhost',

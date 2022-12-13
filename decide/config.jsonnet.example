@@ -47,7 +47,7 @@ local db = {
 
     DATABASES: {
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
+            "ENGINE": "django.db.backends.sqlite3",
             "NAME": db["name"],
             "USER": db["user"],
             "PASSWORD": db["password"],
